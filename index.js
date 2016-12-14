@@ -51,6 +51,10 @@ const gatherOsMetrics = (io, span) => {
   }
 
   pidusage.stat(process.pid, (err, stat) => {
+    if (err) {
+      console.error(err)
+      return
+    }
     stat.memory = stat.memory / 1024 / 1024 // Convert from B to MB
     stat.load = os.loadavg()
     stat.timestamp = Date.now()
@@ -88,7 +92,8 @@ const middlewareWrapper = (app, config) => {
   config.spans.forEach((span) => {
     span.os = []
     span.responses = []
-    setInterval(() => gatherOsMetrics(io, span), span.interval * 1000)
+    const interval = setInterval(() => gatherOsMetrics(io, span), span.interval * 1000)
+    interval.unref()
   })
   // console.log(config)
 
@@ -102,10 +107,10 @@ const middlewareWrapper = (app, config) => {
       this.body = yield fs.readFile(pathToJs, encoding)
     } else {
       let timer
-      if (config.timeout) {
+      if (config.requestTimeout) {
         timer = setTimeout(() => {
-          record.call(this, true);
-        }, config.timeout)
+          record.call(this, true)
+        }, config.requestTimeout)
       }
 
       yield next
@@ -114,10 +119,10 @@ const middlewareWrapper = (app, config) => {
       record.call(this)
     }
 
-    function record(timeout) {
+    function record (timeout) {
       const diff = process.hrtime(startTime)
       const responseTime = diff[0] * 1e3 + diff[1] * 1e-6
-      //if timeout, set response code to 5xx.
+      // if timeout, set response code to 5xx.
       const category = timeout ? 5 : Math.floor(this.statusCode / 100)
 
       config.spans.forEach((span) => {
