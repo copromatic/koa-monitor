@@ -75,7 +75,11 @@ const middlewareWrapper = (app, config) => {
   if (!app.listen) {
     throw new Error('First parameter must be an http server')
   }
-  io = require('socket.io')(app)
+  if(config.websocket){
+    io = config.websocket;
+  }else{
+    io = require('socket.io')(app)
+  }
   Object.assign(defaultConfig, config)
   config = defaultConfig
   const htmlFilePath = path.join(__dirname, 'index.html')
