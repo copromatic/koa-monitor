@@ -38,6 +38,7 @@ For an example koa server, check out `sample/server.js'
 
 ## License
 
-[MIT License](https://opensource.org/licenses/MIT) © Jiří Špác
+[MIT License](https://opensource.org/licenses/MIT) © Copromatic
 
-Forked from [express-status-monitor](https://github.com/RafalWilinski/express-status-monitor)
+Forked from [carlisliu/koa-monitor](https://github.com/carlisliu/koa-monitor)
+which is forked from [express-status-monitor](https://github.com/RafalWilinski/express-status-monitor)
